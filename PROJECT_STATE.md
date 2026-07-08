@@ -3,15 +3,17 @@
 > Claude Code: read this at the start of every session, update it at the end of every session.
 
 ## Current phase
-Phase 0 — Foundation (not started)
+Phase 0 — Foundation (in progress)
 
 ## Last session summary
-No sessions yet. Project planning complete: stack chosen, roadmap and CLAUDE.md written.
+2026-07-08: Scaffolded the Next.js app (App Router, TypeScript, Tailwind) via create-next-app.
+Verified the dev server runs and the starter page renders at localhost:3000 with no errors.
+Committed as "Phase 0: scaffold Next.js app and restore project docs".
 
 ## Next steps
-1. Create the Next.js project locally
-2. Create Supabase project and connect it
-3. Build auth (sign up / log in)
+1. Create Supabase project and connect it via environment variables (.env.local)
+2. Build email/password auth (sign up / log in / log out)
+3. Database schema v1 (books, user_books, shelves, shelf_books) + Row Level Security
 
 ## Decisions log
 - 2026-07-08: Web app first, mobile later. Stack: Next.js + TypeScript + Tailwind + Supabase + Vercel.
@@ -24,3 +26,7 @@ No sessions yet. Project planning complete: stack chosen, roadmap and CLAUDE.md 
 
 ## Environment notes
 - Supabase project URL / keys live in `.env.local` (never committed)
+- Node.js v24 is installed and on the machine PATH, so `node`/`npm` work in a normal terminal.
+- Claude Code's tool shells run with a stripped-down PATH that omits Node, so `.claude/launch.json`
+  invokes the dev server via node.exe by full path. To run the app yourself: open a terminal in this
+  folder and run `npm run dev`, then visit http://localhost:3000.

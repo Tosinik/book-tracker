@@ -53,11 +53,23 @@ Auth note: the "Confirm email" toggle isn't present in this dashboard version, s
 account was created directly via SQL with email pre-confirmed.
 
 ## Next steps
-1. Slice 2 — Book detail page (the biggest slice of Phase 1). Open Library enrichment (description,
-   page_count, cache raw `subjects` JSON — needs a small `books.subjects jsonb` migration, PROPOSE
-   FIRST), interactive 0.5-step star rating (store int 1–10), status pills, review editor. SKIP
-   "Readers also loved" (Phase 3). Then: custom shelves, search + add, reading dates.
-2. Home + login restyled and manifest/icons added in the Slice-1 housekeeping bundle — no polish
+1. Slice 2 — Book detail page + lazy enrichment. Full plan committed to repo:
+   [SLICE_2_PLAN.md](SLICE_2_PLAN.md) (reviewed & green-lit by Chat 2026-07-09). Migration
+   `add_books_enrichment_fields` DONE (subjects, enrichment_attempted_at, enrichment_source + a
+   books UPDATE policy — see Phase 4 blocker in known issues). Remaining build order:
+   a) `lib/books/enrich.ts` — ISBN-first → title+author search fallback (strip Goodreads
+      "(Series, #N)" suffix; author sanity-check before caching; cache misses via
+      enrichment_attempted_at; handle OL work `description` being string OR {type,value}).
+   b) One-off throttled BACKFILL of all 673 (dry-run count first, same throwaway-script pattern
+      as the Goodreads import). Then report coverage by enrichment_source (522 ceiling → ?).
+   c) Grid + detail read cached `cover_url` first, then ISBN-derived URL, then fallback tile.
+   d) Book detail page UI: cover/metadata/description, interactive 0.5-step stars (store int
+      1–10), status pills, review editor. SKIP "Readers also loved" (Phase 3).
+   Then (later slices): custom shelves, search + add, reading dates.
+2. ISBN coverage baseline (2026-07-09): of 673 books, 151 (22.4%) have NO ISBN → currently
+   uncoverable; 522 have ISBNs (today's cover ceiling). Enrichment's search fallback is what
+   recovers the 151. All cover_url/open_library_id are NULL pre-enrichment.
+3. Home + login restyled and manifest/icons added in the Slice-1 housekeeping bundle — no polish
    outstanding there.
 
 ## Optional (helps Phase 1)
@@ -106,6 +118,12 @@ account was created directly via SQL with email pre-confirmed.
 - Set Supabase Auth "Site URL" to the Vercel domain before building password-reset/email flows.
 - (RESOLVED 2026-07-09 — see decisions log) Phase 1 design open questions: genre column,
   current_page, dark-mode persistence.
+- **PHASE 4 BLOCKER (RLS on `books` cache).** The `add_books_enrichment_fields` migration added a
+  permissive UPDATE policy on `books` (`using(true)/check(true)`) so enrichment can cache results.
+  Fine while there's one user, but it lets ANY authenticated user rewrite ANY book's cached
+  cover/description/etc. Before social launches (Phase 4): move enrichment writes server-side
+  (trusted route or DB function so regular users never need UPDATE on the shared cache) and REMOVE
+  this open UPDATE policy. Do not ship social features with this policy in place.
 
 ## Environment notes
 - Supabase project URL / keys live in `.env.local` (never committed)

@@ -3,8 +3,8 @@
 > Claude Code: read this at the start of every session, update it at the end of every session.
 
 ## Current phase
-Phase 0 — Foundation ✅ COMPLETE (2026-07-09). Next: Phase 1 — Core logging
-(but discuss the Goodreads import with Claude Chat first — see HANDOFF.md).
+Phase 0 — Foundation ✅ COMPLETE (2026-07-09). Goodreads import done (673 books seeded).
+Next: Phase 1 — Core logging.
 
 ## Deploy
 - Live URL: https://book-tracker-mu-five.vercel.app (Vercel, auto-deploys from GitHub main)
@@ -26,14 +26,31 @@ account (niklasstark1@gmail.com) was created directly via SQL, email pre-confirm
 supabase-project memory for the method.
 
 ## Next steps
-1. Discuss the Goodreads import with Claude Chat — see HANDOFF.md (parked, do not start until
-   the user confirms after that discussion). CSV is at
-   C:\Users\Niklas\Downloads\goodreads_library_export.csv (read from there; never copy into repo).
-2. Phase 1 — Core logging (Open Library search, book detail, add-to-library, ratings, reviews,
-   shelves, filtered library view). PROPOSE APPROACH BEFORE BUILDING.
+1. Phase 1 — Core logging (Open Library search, book detail, add-to-library, ratings, reviews,
+   shelves, filtered library view). PROPOSE APPROACH BEFORE BUILDING. Real data now exists to
+   build against (673 imported books); fetch + cache book covers/descriptions lazily from Open
+   Library as books are displayed (they were imported without them).
 
 ## Optional (helps Phase 1)
 - Generate TypeScript types from the schema for typed Supabase queries.
+
+## Goodreads import — agreed plan (2026-07-09, confirmed with Claude Chat)
+- One-off seed SCRIPT (not a reusable feature yet). Raw Goodreads fields only.
+- No Open Library enrichment now; fetch covers/descriptions lazily in Phase 1.
+- Dedupe by ISBN13; fall back to title+author when ISBN13 is missing (Goodreads ISBNs often blank).
+- Strip Goodreads' ="..." wrapping from ISBN/ISBN13 (keep only digits and X).
+- DRY-RUN count first (totals, statuses, ratings, shelves), then insert after review.
+- Mapping: Exclusive Shelf -> status (read/currently-reading/to-read ->
+  read/currently_reading/want_to_read); My Rating 1-5 x2 -> rating 1-10, 0 -> null (unrated);
+  My Review -> review; Date Read -> finished_at; Date Added -> created_at; custom Bookshelves
+  (excluding the exclusive-shelf names) -> shelves + shelf_books.
+- CSV stays in Downloads; generated seed data goes to the scratchpad, NEVER the repo.
+- Inserts ran via a throwaway supabase-js script authenticated AS the user (RLS-respecting; no
+  service key or admin SQL needed for the inserts).
+- RESULT (2026-07-09): imported 673 books, 673 user_books (492 read / 177 want_to_read /
+  4 currently_reading; 483 rated; 470 with finish dates), 13 shelves, 166 shelf placements.
+  Verified in DB and in the app (/library shows "673 books"). Books have NO covers/descriptions
+  yet — enrich lazily from Open Library in Phase 1.
 
 ## Decisions log
 - 2026-07-08: Web app first, mobile later. Stack: Next.js + TypeScript + Tailwind + Supabase + Vercel.

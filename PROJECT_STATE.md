@@ -14,12 +14,19 @@ verified live; HAPPY PATH still unverified (see open questions). (4) Applied `sc
 tables books, user_books, shelves, shelf_books, all with RLS enabled and owner-only policies
 (books is shared read/insert by design). SQL recorded in supabase/migrations/schema_v1.sql.
 
-## Next steps
-1. Verify auth happy path once user turns OFF "Confirm email" in Supabase (then a real-email
-   signup logs in instantly). Then check that Phase 0 box.
-2. Basic app shell: nav + empty library page (uses the new tables).
-3. First Vercel deploy — ASK first. That closes Phase 0.
-4. (Optional, helps Phase 1) generate TypeScript types from the schema for typed queries.
+## Next steps (only 2 Phase 0 items remain, both need the user)
+1. Verify auth happy path: user turns OFF "Confirm email" in Supabase
+   (dashboard > Auth > Providers > Email), then a real-email signup logs in
+   instantly. Then I run signup/login/logout end-to-end and check the box.
+2. First Vercel deploy — ASK FIRST. Needs the user's Vercel account and the two
+   NEXT_PUBLIC_SUPABASE_* env vars set in Vercel. That closes Phase 0.
+
+Done since last update: basic app shell (Nav in layout, protected /library with
+empty state, home landing). Verified logged-out behavior; logged-in views are
+code-complete + typechecked but await the auth toggle to verify at runtime.
+
+## Optional (helps Phase 1)
+- Generate TypeScript types from the schema for typed Supabase queries.
 
 ## Decisions log
 - 2026-07-08: Web app first, mobile later. Stack: Next.js + TypeScript + Tailwind + Supabase + Vercel.

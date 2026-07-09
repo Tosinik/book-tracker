@@ -10,28 +10,19 @@ export default async function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-4">
       <div className="w-full max-w-md text-center">
-        <h1 className="mb-2 text-3xl font-semibold tracking-tight">
+        <h1 className="mb-3 font-serif text-4xl tracking-tight text-ink">
           Book Tracker
         </h1>
-        <p className="mb-6 text-zinc-600 dark:text-zinc-400">
+        <p className="mb-8 text-ink-soft">
           A faster, friendlier place to log what you read.
         </p>
 
-        {user ? (
-          <Link
-            href="/library"
-            className="inline-block rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-200"
-          >
-            Go to your library
-          </Link>
-        ) : (
-          <Link
-            href="/login"
-            className="inline-block rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-200"
-          >
-            Log in or sign up
-          </Link>
-        )}
+        <Link
+          href={user ? "/library" : "/login"}
+          className="inline-block rounded-full bg-accent px-5 py-2 text-sm font-medium text-paper transition-colors hover:opacity-90"
+        >
+          {user ? "Go to your library" : "Log in or sign up"}
+        </Link>
       </div>
     </main>
   );

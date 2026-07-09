@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Newsreader, Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/nav";
@@ -24,6 +24,12 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Book Tracker",
   description: "Track your reading — a faster, friendlier reading log.",
+  appleWebApp: { capable: true, title: "Book Tracker", statusBarStyle: "default" },
+};
+
+// Sets the mobile browser chrome / toolbar color to the terracotta accent.
+export const viewport: Viewport = {
+  themeColor: "#b5502f",
 };
 
 // Runs before the page paints: reads the saved theme (or the OS preference) and

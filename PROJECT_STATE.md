@@ -4,8 +4,9 @@
 
 ## Current phase
 Phase 0 — Foundation ✅ COMPLETE (2026-07-09). Goodreads import done (673 books seeded).
-Phase 1 — Core logging: GREEN-LIT by Chat (2026-07-09), docs reviewed consistent. Build order
-starts with the Library view + lazy cover fetching. Open questions resolved (see decisions log).
+Phase 1 — Core logging: IN PROGRESS. Slice 1 (Library view + design system foundation) SHIPPED &
+deployed 2026-07-09. Next: Slice 2 — Book detail page (enrichment + interactive stars + status +
+review). Open questions resolved (see decisions log).
 
 ## Deploy
 - Live URL: https://book-tracker-mu-five.vercel.app (Vercel, auto-deploys from GitHub main)
@@ -32,7 +33,17 @@ starts with the Library view + lazy cover fetching. Open questions resolved (see
   cover, mandatory typographic fallback tile for missing art. Keep OL calls in `lib/books/`.
 
 ## Last session summary
-2026-07-09: COMPLETED PHASE 0 end to end. Scaffolded Next.js 16.2 (App Router, TS, Tailwind);
+2026-07-09 (Slice 1): Shipped Phase 1 Slice 1 — the Library view + the "Stacks × Journal" design
+system foundation. Color tokens (light+dark) + Newsreader/Archivo/JetBrains Mono fonts; data-theme
+dark mode with a manual toggle (localStorage) + inline anti-flash script. Library view: Now Reading
+hero, cover grid + list toggle, status filter chips, read-only star ratings; covers lazy-loaded
+from Open Library by ISBN with a typographic fallback tile (lib/books/covers.ts). Added nullable
+`user_books.current_page` (migration applied + recorded). Restyled home + login to the paper
+palette; added a web app manifest + generated icons (a "B" on terracotta via next/og) so the site
+is installable from mobile Chrome — no service worker yet. Verified via `next build` + live preview
+(both themes). Repo also made public earlier same day. Committed + deployed.
+
+2026-07-09 (Phase 0): COMPLETED PHASE 0 end to end. Scaffolded Next.js 16.2 (App Router, TS, Tailwind);
 created + connected the Supabase project; built email/password auth (login/signup/logout +
 proxy.ts session refresh); applied schema_v1 (books, user_books, shelves, shelf_books) with RLS;
 built the app shell (Nav + protected /library). Pushed to GitHub (private) and deployed to Vercel.
@@ -42,10 +53,12 @@ Auth note: the "Confirm email" toggle isn't present in this dashboard version, s
 account was created directly via SQL with email pre-confirmed.
 
 ## Next steps
-1. Phase 1 — Core logging. Build order + data notes in DESIGN_HANDOFF.md; visual spec in
-   DESIGN_DIRECTION.md. Start with the Library view + lazy cover fetching (turns the 673 imported
-   books visible fast), then book detail, shelves, search+add, reading dates. PROPOSE APPROACH
-   BEFORE BUILDING.
+1. Slice 2 — Book detail page (the biggest slice of Phase 1). Open Library enrichment (description,
+   page_count, cache raw `subjects` JSON — needs a small `books.subjects jsonb` migration, PROPOSE
+   FIRST), interactive 0.5-step star rating (store int 1–10), status pills, review editor. SKIP
+   "Readers also loved" (Phase 3). Then: custom shelves, search + add, reading dates.
+2. Home + login restyled and manifest/icons added in the Slice-1 housekeeping bundle — no polish
+   outstanding there.
 
 ## Optional (helps Phase 1)
 - Generate TypeScript types from the schema for typed Supabase queries.

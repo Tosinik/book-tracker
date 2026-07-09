@@ -14,16 +14,20 @@ verified live; HAPPY PATH still unverified (see open questions). (4) Applied `sc
 tables books, user_books, shelves, shelf_books, all with RLS enabled and owner-only policies
 (books is shared read/insert by design). SQL recorded in supabase/migrations/schema_v1.sql.
 
-## Next steps (only 2 Phase 0 items remain, both need the user)
-1. Verify auth happy path: user turns OFF "Confirm email" in Supabase
-   (dashboard > Auth > Providers > Email), then a real-email signup logs in
-   instantly. Then I run signup/login/logout end-to-end and check the box.
-2. First Vercel deploy — ASK FIRST. Needs the user's Vercel account and the two
-   NEXT_PUBLIC_SUPABASE_* env vars set in Vercel. That closes Phase 0.
+## Next steps — ONLY the Vercel deploy remains in Phase 0
+1. First Vercel deploy — ASK FIRST. Needs: push repo to GitHub (also ask),
+   connect to Vercel, set the two NEXT_PUBLIC_SUPABASE_* env vars in Vercel.
+   That closes Phase 0.
 
-Done since last update: basic app shell (Nav in layout, protected /library with
-empty state, home landing). Verified logged-out behavior; logged-in views are
-code-complete + typechecked but await the auth toggle to verify at runtime.
+Auth is DONE and verified end-to-end (login/library/logout all work). The
+"Confirm email" toggle isn't available in this dashboard version, so the account
+was created directly via SQL — see the supabase-project memory for the auth
+quirk and the method. Test account: niklasstark1@gmail.com.
+
+## Parked for after Phase 0 (confirm with Chat first)
+- Goodreads import (ICEBOX, pulled forward on request). CSV is at
+  C:\Users\Niklas\Downloads\goodreads_library_export.csv. Do not start until
+  Phase 0 is done and the user confirms.
 
 ## Optional (helps Phase 1)
 - Generate TypeScript types from the schema for typed Supabase queries.

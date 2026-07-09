@@ -9,7 +9,7 @@ export default async function LoginPage({
   const { error } = await searchParams;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 dark:bg-black">
+    <div className="flex flex-1 flex-col items-center justify-center px-4 py-16">
       <main className="w-full max-w-sm">
         <h1 className="mb-1 text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
           Book Tracker

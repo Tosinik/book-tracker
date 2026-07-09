@@ -6,14 +6,19 @@
 Phase 0 — Foundation (in progress)
 
 ## Last session summary
-2026-07-08: Scaffolded the Next.js app (App Router, TypeScript, Tailwind) via create-next-app.
-Verified the dev server runs and the starter page renders at localhost:3000 with no errors.
-Committed as "Phase 0: scaffold Next.js app and restore project docs".
+2026-07-08: (1) Scaffolded the Next.js app (App Router, TypeScript, Tailwind, Next 16.2) via
+create-next-app; dev server verified at localhost:3000. (2) Created Supabase project `book-tracker`
+(ref fektvgvwwezbznbzwfnq, eu-central-1, free plan) and connected it via `.env.local`
+(NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY, publishable key). Added browser +
+server client helpers in src/lib/supabase/. Verified live: server client OK, project reachable
+HTTP 200, typecheck clean. Two commits landed.
 
 ## Next steps
-1. Create Supabase project and connect it via environment variables (.env.local)
-2. Build email/password auth (sign up / log in / log out)
-3. Database schema v1 (books, user_books, shelves, shelf_books) + Row Level Security
+1. Email/password auth (sign up / log in / log out) — needs a proxy.ts (Next 16 renamed
+   middleware.ts) to refresh Supabase sessions. PROPOSE APPROACH BEFORE BUILDING.
+2. Database schema v1 (books, user_books, shelves, shelf_books) + Row Level Security
+   — this is a DB migration, so ASK before applying.
+3. Basic app shell (nav + empty library page), then first Vercel deploy (ASK first).
 
 ## Decisions log
 - 2026-07-08: Web app first, mobile later. Stack: Next.js + TypeScript + Tailwind + Supabase + Vercel.

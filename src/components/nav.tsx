@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signout } from "@/app/login/actions";
+import ThemeToggle from "@/components/theme-toggle";
 
 /**
  * Top navigation bar. It's a Server Component, so it can read the logged-in
@@ -14,29 +15,24 @@ export default async function Nav() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-black/50">
-      <nav className="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-3">
-        <Link
-          href="/"
-          className="font-semibold tracking-tight text-black dark:text-zinc-50"
-        >
+    <header className="sticky top-0 z-10 border-b border-line bg-paper/80 backdrop-blur">
+      <nav className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3">
+        <Link href="/" className="font-serif text-xl tracking-tight text-ink">
           Book Tracker
         </Link>
 
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex items-center gap-3 text-sm">
+          <ThemeToggle />
           {user ? (
             <>
               <Link
                 href="/library"
-                className="text-zinc-700 hover:text-black dark:text-zinc-300 dark:hover:text-white"
+                className="text-ink-soft transition-colors hover:text-ink"
               >
                 Library
               </Link>
-              <span className="hidden text-zinc-500 sm:inline">
-                {user.email}
-              </span>
               <form action={signout}>
-                <button className="rounded-full border border-zinc-300 px-3 py-1 font-medium text-black transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-50 dark:hover:bg-zinc-900">
+                <button className="rounded-full border border-border px-3 py-1 font-medium text-ink transition-colors hover:bg-chip">
                   Log out
                 </button>
               </form>
@@ -44,7 +40,7 @@ export default async function Nav() {
           ) : (
             <Link
               href="/login"
-              className="rounded-full bg-black px-3 py-1 font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-200"
+              className="rounded-full bg-accent px-3 py-1 font-medium text-paper transition-colors hover:opacity-90"
             >
               Log in
             </Link>

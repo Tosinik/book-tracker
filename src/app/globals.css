@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
+/* Dark mode is driven by a data-theme attribute on <html> (set by the inline
+   script in layout.tsx), not the OS media query — so a manual toggle can win. */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* "The Mix: Stacks × Journal" tokens — light (default) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f5efe3;
+  --raised: #fbf7ee;
+  --ink: #2a2622;
+  --ink-soft: #6a655d;
+  --muted: #8a8171;
+  --label: #a39a88;
+  --line: rgba(42, 38, 34, 0.12);
+  --border: #e2d9c6;
+  --chip: #eae2d1;
+  --accent: #b5502f;
+  --accent-ink: #345074;
+  --star-gold: #d98324;
+  --star-empty: #ddd2bf;
 }
 
+/* Dark — warm near-black, not flat grey-on-black */
+:root[data-theme="dark"] {
+  --paper: #17140f;
+  --raised: #211d16;
+  --ink: #efe7d7;
+  --ink-soft: #b3a996;
+  --muted: #8f8574;
+  --label: #9a8f7b;
+  --line: rgba(255, 255, 255, 0.1);
+  --border: #3a342a;
+  --chip: #2a251d;
+  --accent: #d47a4f;
+  --accent-ink: #8aa6cd;
+  --star-gold: #e0972f;
+  --star-empty: #453f31;
+}
+
+/* Expose tokens to Tailwind as utilities (bg-paper, text-ink, border-border, …).
+   "inline" keeps the var reference live so values swap at runtime on theme change. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-paper: var(--paper);
+  --color-raised: var(--raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-label: var(--label);
+  --color-line: var(--line);
+  --color-border: var(--border);
+  --color-chip: var(--chip);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-star-gold: var(--star-gold);
+  --color-star-empty: var(--star-empty);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-serif: var(--font-newsreader);
+  --font-sans: var(--font-archivo);
+  --font-mono: var(--font-jetbrains);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }

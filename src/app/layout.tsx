@@ -1,22 +1,44 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Newsreader, Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/nav";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Newsreader = serif display/titles, Archivo = UI/body, JetBrains Mono = labels.
+// next/font self-hosts these Google fonts (no layout shift, no external request).
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
   subsets: ["latin"],
+  display: "swap",
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
+  display: "swap",
+});
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Book Tracker",
   description: "Track your reading — a faster, friendlier reading log.",
 };
+
+// Runs before the page paints: reads the saved theme (or the OS preference) and
+// sets data-theme immediately, so there's no white flash before dark mode applies.
+const themeScript = `
+(function () {
+  try {
+    var t = localStorage.getItem('theme');
+    if (t !== 'light' && t !== 'dark') {
+      t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+`;
 
 export default function RootLayout({
   children,
@@ -26,9 +48,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${newsreader.variable} ${archivo.variable} ${jetbrainsMono.variable} h-full`}
     >
-      <body className="flex min-h-full flex-col bg-zinc-50 text-black dark:bg-black dark:text-zinc-50">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="flex min-h-full flex-col bg-paper text-ink">
         <Nav />
         {children}
       </body>

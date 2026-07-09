@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Book Tracker
 
-## Getting Started
+A faster, friendlier reading log — a personal alternative to Goodreads, built for readers who
+want their library to load fast and feel good to use. Track what you've read, rate it (half-star
+precision), keep reviews and custom shelves, and see what you're reading now.
 
-First, run the development server:
+**Live site:** https://book-tracker-mu-five.vercel.app
+
+## Stack
+
+- **Framework:** Next.js (App Router) + TypeScript
+- **Styling:** Tailwind CSS
+- **Backend / Auth / DB:** Supabase (Postgres with Row Level Security on every table)
+- **Book data:** Open Library API (covers, metadata), Google Books as a fallback
+- **Hosting:** Vercel (auto-deploys from `main`)
+
+All personal reading data is private by default, enforced at the database level by Row Level
+Security — a public repo does not expose anyone's library.
+
+## Running locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000. You'll need a `.env.local` with your own Supabase project keys
+(see `.env.example` for the variable names). `.env.local` is gitignored — never commit real keys.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Status
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Early stage. Phase 0 (auth, schema, deploy) is complete; Phase 1 (core logging — library view,
+book detail, ratings, shelves, search) is in progress.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with [Claude Code](https://claude.com/claude-code) + Claude Design.

@@ -4,11 +4,12 @@
 
 ## Current phase
 Phase 0 — Foundation ✅ COMPLETE (2026-07-09). Goodreads import done (673 books seeded).
-Next: Phase 1 — Core logging.
+Phase 1 — Core logging: GREEN-LIT by Chat (2026-07-09), docs reviewed consistent. Build order
+starts with the Library view + lazy cover fetching. Open questions resolved (see decisions log).
 
 ## Deploy
 - Live URL: https://book-tracker-mu-five.vercel.app (Vercel, auto-deploys from GitHub main)
-- GitHub: https://github.com/Tosinik/book-tracker (private)
+- GitHub: https://github.com/Tosinik/book-tracker (public as of 2026-07-09)
 - Vercel env vars set: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
 - Both home + /login verified rendering in production with no errors.
 - TODO later: set Supabase Auth "Site URL" to the Vercel domain (needed for
@@ -72,18 +73,26 @@ account was created directly via SQL with email pre-confirmed.
 - 2026-07-08: Book data from Open Library API (free, keyless); Google Books as fallback for upcoming releases.
 - 2026-07-08: Ratings stored as integers 1–10 (= 0.5–5.0 stars).
 - 2026-07-08: All data private by default; social features are opt-in in Phase 4.
-- 2026-07-09: GitHub repo is private. Email confirmation left ON (couldn't disable in dashboard);
-  users created/confirmed via SQL when needed.
+- 2026-07-09: GitHub repo made public (scrubbed owner email from docs first; history secret-scanned
+  clean — no .env/keys/CSV ever committed; data stays private via Supabase RLS). Email confirmation
+  left ON (couldn't disable in dashboard); users created/confirmed via SQL when needed.
 - 2026-07-09: Goodreads import (Icebox) pulled forward and DONE — 673 books seeded as real test
   data (confirmed with Claude Chat).
 - 2026-07-09: Phase 1 visual direction locked with Claude Design — "The Mix: Stacks × Journal"
   (see DESIGN_DIRECTION.md / DESIGN_HANDOFF.md).
+- 2026-07-09: Phase 1 green-lit by Chat (docs reviewed consistent). Open questions resolved:
+  (1) NO curated `genre` column — but when lazily enriching from Open Library, also cache raw
+  `subjects` (JSON) and `page_count` on the `books` row for the Phase 3 taste profile.
+  (2) Add nullable `current_page` to `user_books` now (migration proposed before running). Now
+  Reading progress renders ONLY when both `current_page` and `page_count` exist; degrades
+  gracefully otherwise. (3) Dark mode = system default + manual toggle persisted in localStorage,
+  with an inline anti-flash script in <head>. Also: SKIP "Readers also loved" on book detail
+  (that's Phase 3).
 
 ## Known bugs / open questions
 - Set Supabase Auth "Site URL" to the Vercel domain before building password-reset/email flows.
-- Phase 1 design open questions (from DESIGN_HANDOFF.md, for Chat): curated `genre` per book vs.
-  derive from shelves? Add `user_books.current_page` now for Now-Reading progress, or defer to
-  Icebox? Dark-mode preference persistence — localStorage vs. a user settings row?
+- (RESOLVED 2026-07-09 — see decisions log) Phase 1 design open questions: genre column,
+  current_page, dark-mode persistence.
 
 ## Environment notes
 - Supabase project URL / keys live in `.env.local` (never committed)

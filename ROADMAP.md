@@ -2,14 +2,14 @@
 
 Phases are sequential. A phase is done when everything in it works end-to-end and is committed. Don't start the next phase early.
 
-## Phase 0 — Foundation
-- [ ] Create Next.js project (TypeScript, Tailwind, App Router)
-- [ ] Set up Supabase project, connect via environment variables
-- [ ] Email/password auth (sign up, log in, log out)
-- [ ] Database schema v1: `books` (cached book data), `user_books` (user's log: status, rating, review, dates), `shelves`, `shelf_books`
-- [ ] Row Level Security policies on all tables
-- [ ] Basic app shell: navigation, empty library page
-- [ ] Git repo initialized, first deploy to Vercel (with approval)
+## Phase 0 — Foundation ✅ COMPLETE (2026-07-09)
+- [x] Create Next.js project (TypeScript, Tailwind, App Router)
+- [x] Set up Supabase project, connect via environment variables
+- [x] Email/password auth (sign up, log in, log out)
+- [x] Database schema v1: `books` (cached book data), `user_books` (user's log: status, rating, review, dates), `shelves`, `shelf_books`
+- [x] Row Level Security policies on all tables
+- [x] Basic app shell: navigation, empty library page
+- [x] Git repo initialized, first deploy to Vercel (with approval)
 
 ## Phase 1 — Core logging
 - [ ] Book search via Open Library API (title/author/ISBN)

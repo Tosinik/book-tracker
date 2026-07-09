@@ -37,9 +37,8 @@ proxy.ts session refresh); applied schema_v1 (books, user_books, shelves, shelf_
 built the app shell (Nav + protected /library). Pushed to GitHub (private) and deployed to Vercel.
 Verified login on the LIVE site.
 
-Auth note: the "Confirm email" toggle isn't present in this dashboard version, so the user's
-account (niklasstark1@gmail.com) was created directly via SQL, email pre-confirmed. See the
-supabase-project memory for the method.
+Auth note: the "Confirm email" toggle isn't present in this dashboard version, so the owner
+account was created directly via SQL with email pre-confirmed.
 
 ## Next steps
 1. Phase 1 — Core logging. Build order + data notes in DESIGN_HANDOFF.md; visual spec in

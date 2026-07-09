@@ -6,19 +6,20 @@
 Phase 0 — Foundation (in progress)
 
 ## Last session summary
-2026-07-08: (1) Scaffolded the Next.js app (App Router, TypeScript, Tailwind, Next 16.2) via
-create-next-app; dev server verified at localhost:3000. (2) Created Supabase project `book-tracker`
-(ref fektvgvwwezbznbzwfnq, eu-central-1, free plan) and connected it via `.env.local`
-(NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY, publishable key). Added browser +
-server client helpers in src/lib/supabase/. Verified live: server client OK, project reachable
-HTTP 200, typecheck clean. Two commits landed.
+2026-07-08/09: (1) Scaffolded Next.js (App Router, TS, Tailwind, Next 16.2). (2) Created Supabase
+project `book-tracker` (ref fektvgvwwezbznbzwfnq, eu-central-1, free) and connected via `.env.local`;
+client helpers in src/lib/supabase/. (3) Built email/password auth: login/signup page + server
+actions (src/app/login), home shows signed-in state, proxy.ts refreshes sessions. Error paths
+verified live; HAPPY PATH still unverified (see open questions). (4) Applied `schema_v1` migration:
+tables books, user_books, shelves, shelf_books, all with RLS enabled and owner-only policies
+(books is shared read/insert by design). SQL recorded in supabase/migrations/schema_v1.sql.
 
 ## Next steps
-1. Email/password auth (sign up / log in / log out) — needs a proxy.ts (Next 16 renamed
-   middleware.ts) to refresh Supabase sessions. PROPOSE APPROACH BEFORE BUILDING.
-2. Database schema v1 (books, user_books, shelves, shelf_books) + Row Level Security
-   — this is a DB migration, so ASK before applying.
-3. Basic app shell (nav + empty library page), then first Vercel deploy (ASK first).
+1. Verify auth happy path once user turns OFF "Confirm email" in Supabase (then a real-email
+   signup logs in instantly). Then check that Phase 0 box.
+2. Basic app shell: nav + empty library page (uses the new tables).
+3. First Vercel deploy — ASK first. That closes Phase 0.
+4. (Optional, helps Phase 1) generate TypeScript types from the schema for typed queries.
 
 ## Decisions log
 - 2026-07-08: Web app first, mobile later. Stack: Next.js + TypeScript + Tailwind + Supabase + Vercel.

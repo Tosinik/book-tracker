@@ -14,6 +14,21 @@ Next: Phase 1 — Core logging.
 - TODO later: set Supabase Auth "Site URL" to the Vercel domain (needed for
   email/password-reset redirect flows; not required for basic password login).
 
+## Design (Phase 1 visual direction) — locked 2026-07-09
+- Direction: "The Mix: Stacks × Journal" — editorial/magazine, warm paper, serif masthead
+  (Newsreader), cover-gallery grid + grid/list toggle, Now Reading hero, dark mode. Mobile-web first.
+- Specs committed to repo: [DESIGN_DIRECTION.md](DESIGN_DIRECTION.md) (color tokens light+dark,
+  type, cover + fallback rules, component specs) and [DESIGN_HANDOFF.md](DESIGN_HANDOFF.md)
+  (Phase 1 build order + data notes).
+- Interactive design (all screens, live star rating + theme toggle) lives in the Claude Design
+  project as `Library Directions.dc.html`. Shareable link: <ADD DESIGN URL HERE>
+- Phase 1 build order (front-loads the payoff): 1) Library view + lazy cover fetching,
+  2) Book detail (cover/metadata/description, 0.5-step star rating, status, review), 3) custom
+  shelves, 4) Open Library search + add, 5) reading dates. Discovery ("beyond your bubble") is
+  Phase 3 (designed early, do NOT build in Phase 1).
+- Covers: Open Library `covers.openlibrary.org/b/isbn/{ISBN}-{M|L}.jpg`, 2:3 frame + object-fit
+  cover, mandatory typographic fallback tile for missing art. Keep OL calls in `lib/books/`.
+
 ## Last session summary
 2026-07-09: COMPLETED PHASE 0 end to end. Scaffolded Next.js 16.2 (App Router, TS, Tailwind);
 created + connected the Supabase project; built email/password auth (login/signup/logout +
@@ -26,10 +41,10 @@ account (niklasstark1@gmail.com) was created directly via SQL, email pre-confirm
 supabase-project memory for the method.
 
 ## Next steps
-1. Phase 1 — Core logging (Open Library search, book detail, add-to-library, ratings, reviews,
-   shelves, filtered library view). PROPOSE APPROACH BEFORE BUILDING. Real data now exists to
-   build against (673 imported books); fetch + cache book covers/descriptions lazily from Open
-   Library as books are displayed (they were imported without them).
+1. Phase 1 — Core logging. Build order + data notes in DESIGN_HANDOFF.md; visual spec in
+   DESIGN_DIRECTION.md. Start with the Library view + lazy cover fetching (turns the 673 imported
+   books visible fast), then book detail, shelves, search+add, reading dates. PROPOSE APPROACH
+   BEFORE BUILDING.
 
 ## Optional (helps Phase 1)
 - Generate TypeScript types from the schema for typed Supabase queries.
@@ -59,13 +74,16 @@ supabase-project memory for the method.
 - 2026-07-08: All data private by default; social features are opt-in in Phase 4.
 - 2026-07-09: GitHub repo is private. Email confirmation left ON (couldn't disable in dashboard);
   users created/confirmed via SQL when needed.
-- 2026-07-09: Goodreads import (Icebox) may be pulled forward for real test data, pending a
-  discussion with Claude Chat. Not started.
+- 2026-07-09: Goodreads import (Icebox) pulled forward and DONE — 673 books seeded as real test
+  data (confirmed with Claude Chat).
+- 2026-07-09: Phase 1 visual direction locked with Claude Design — "The Mix: Stacks × Journal"
+  (see DESIGN_DIRECTION.md / DESIGN_HANDOFF.md).
 
 ## Known bugs / open questions
 - Set Supabase Auth "Site URL" to the Vercel domain before building password-reset/email flows.
-- Goodreads import approach is undecided (one-off SQL seed vs. a real import feature; whether to
-  enrich with Open Library covers) — to be resolved with Claude Chat. See HANDOFF.md.
+- Phase 1 design open questions (from DESIGN_HANDOFF.md, for Chat): curated `genre` per book vs.
+  derive from shelves? Add `user_books.current_page` now for Now-Reading progress, or defer to
+  Icebox? Dark-mode preference persistence — localStorage vs. a user settings row?
 
 ## Environment notes
 - Supabase project URL / keys live in `.env.local` (never committed)

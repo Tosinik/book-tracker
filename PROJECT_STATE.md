@@ -21,7 +21,8 @@ Next: Phase 1 — Core logging.
   type, cover + fallback rules, component specs) and [DESIGN_HANDOFF.md](DESIGN_HANDOFF.md)
   (Phase 1 build order + data notes).
 - Interactive design (all screens, live star rating + theme toggle) lives in the Claude Design
-  project as `Library Directions.dc.html`. Shareable link: <ADD DESIGN URL HERE>
+  project as `Library Directions.dc.html`. Shareable link:
+  https://claude.ai/design/p/d17d1900-ed3e-4ed8-ad16-573f2fed8183?file=Library+Directions.dc.html&via=share
 - Phase 1 build order (front-loads the payoff): 1) Library view + lazy cover fetching,
   2) Book detail (cover/metadata/description, 0.5-step star rating, status, review), 3) custom
   shelves, 4) Open Library search + add, 5) reading dates. Discovery ("beyond your bubble") is

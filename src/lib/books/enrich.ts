@@ -168,7 +168,10 @@ const COLLECTION_MARKERS = new Set([
 function titleSigTokens(title: string): string[] {
   return normalizeName(title)
     .split(" ")
-    .filter((t) => t && !TITLE_STOPWORDS.has(t) && !/^\d+$/.test(t));
+    // Drop stopwords, pure numbers, and single letters (e.g. the "s" that
+    // normalizeName leaves from "Fool's" — otherwise "Fool's Quest" and "Fool's
+    // Assassin" share {fool, s} and look like the same book).
+    .filter((t) => t.length >= 2 && !TITLE_STOPWORDS.has(t) && !/^\d+$/.test(t));
 }
 
 /**
@@ -190,7 +193,10 @@ export function titleMatches(ours: string, candidate: string | null): boolean {
   const cSig = titleSigTokens(candidate);
   const overlap = o.filter((t) => candTokens.has(t)).length;
   const denom = Math.max(1, Math.min(o.length, cSig.length || o.length));
-  return overlap / denom >= 0.5;
+  // Strictly greater than half: two-word titles sharing one word (e.g. "Blood of
+  // Empire" vs "Sins of Empire", "Fool's Quest" vs "Fool's Assassin") score 0.5
+  // and must be rejected; a real match covers the shorter title's tokens fully.
+  return overlap / denom > 0.5;
 }
 
 /**

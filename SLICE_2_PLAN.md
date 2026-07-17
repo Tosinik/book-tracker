@@ -57,9 +57,19 @@ the cost once (~10 min at 1–2 req/s), and the grid then serves purely from cac
 throwaway-script-with-dry-run pattern as the Goodreads import (a proven playbook):
 1. **Dry-run count first** — how many books, how many via ISBN vs search, before any writes.
 2. Run for real, RLS-respecting (authenticated as the user, no service key).
-3. **Report coverage by `enrichment_source`** afterwards: 522 ceiling → ? (ISBN vs search hits,
-   and remaining fallbacks). This after-number goes into the README:
-   *"673 books, X% with cover art, auto-enriched from Open Library."*
+3. **Report coverage by `enrichment_source`** afterwards.
+
+### RESULT (2026-07-09)
+**636 / 673 books (94.5%) have cover art** — 416 via ISBN, 220 via title+author search; 37 genuine
+misses. Up from ~418 (62%) coverable by ISBN alone. README line:
+*"673 books, 95% with cover art, auto-enriched from Open Library."*
+
+The matcher needed hardening after review found wrong matches (a book taking a same-author book's
+or an omnibus's cover). Final rules: 3-state author check (Latin surname w/ suffix + transliteration
+tolerance; non-Latin authors trusted only when author-anchored or title matches exactly) AND a
+title-agreement check (overlap of the shorter title's significant tokens > 0.5, single-letter and
+collection tokens dropped). Descriptions/subjects/open_library_id were NOT written in this pass
+(see PROJECT_STATE).
 
 ## Consuming the covers
 `BookCover` (and the library grid query) prefer the cached `cover_url`, then fall back to the

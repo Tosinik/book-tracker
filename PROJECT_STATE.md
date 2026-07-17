@@ -53,22 +53,32 @@ Auth note: the "Confirm email" toggle isn't present in this dashboard version, s
 account was created directly via SQL with email pre-confirmed.
 
 ## Next steps
-1. Slice 2 — Book detail page + lazy enrichment. Full plan committed to repo:
-   [SLICE_2_PLAN.md](SLICE_2_PLAN.md) (reviewed & green-lit by Chat 2026-07-09). Migration
-   `add_books_enrichment_fields` DONE (subjects, enrichment_attempted_at, enrichment_source + a
-   books UPDATE policy — see Phase 4 blocker in known issues). Remaining build order:
-   a) `lib/books/enrich.ts` — ISBN-first → title+author search fallback (strip Goodreads
-      "(Series, #N)" suffix; author sanity-check before caching; cache misses via
-      enrichment_attempted_at; handle OL work `description` being string OR {type,value}).
-   b) One-off throttled BACKFILL of all 673 (dry-run count first, same throwaway-script pattern
-      as the Goodreads import). Then report coverage by enrichment_source (522 ceiling → ?).
-   c) Grid + detail read cached `cover_url` first, then ISBN-derived URL, then fallback tile.
-   d) Book detail page UI: cover/metadata/description, interactive 0.5-step stars (store int
+1. Slice 2 — Book detail page + lazy enrichment. Plan: [SLICE_2_PLAN.md](SLICE_2_PLAN.md).
+   COVER ENRICHMENT DONE & written to DB (2026-07-09):
+   - `lib/books/enrich.ts` built + hardened: ISBN-first, then a free-text `q=` title+author
+     search. Author check is 3-state (yes/no/nonlatin) — handles non-Latin author names
+     (Murakami/Dostoevsky), strips "Jr."/initials, tolerates transliteration. TITLE must also
+     agree (titleMatches) so we never take a different book by the same author or an omnibus.
+     Two-attempt (author-anchored, then stricter title-only). Verified against live OL + controls.
+   - **Coverage written: 636 / 673 books (94.5%) have `cover_url`** — 416 via ISBN, 220 via
+     search; 37 genuine misses (obscure/foreign/self-pub/coverless on OL). ALL 673 rows have
+     `enrichment_attempted_at` set. `page_count` + `enrichment_source` written too.
+   - Grid/hero/list now read cached `cover_url` first, then ISBN URL, then fallback tile
+     (BookCover + library query updated).
+   REMAINING for Slice 2:
+   a) **descriptions + subjects NOT yet written** — the compact DB write omitted them (the full
+      dataset was ~840KB, too big to stream through the Supabase MCP; descriptions have no UI yet).
+      Write them when building the detail page, OR run an all-fields script. The enrich module
+      already fetches them (fetchDetails:true).
+   b) **open_library_id NOT written** — its UNIQUE constraint collides with genuine library
+      duplicates (two "Cat's Cradle" rows). Populate per-book on the detail page.
+   c) Book detail page UI: cover/metadata/description, interactive 0.5-step stars (store int
       1–10), status pills, review editor. SKIP "Readers also loved" (Phase 3).
    Then (later slices): custom shelves, search + add, reading dates.
-2. ISBN coverage baseline (2026-07-09): of 673 books, 151 (22.4%) have NO ISBN → currently
-   uncoverable; 522 have ISBNs (today's cover ceiling). Enrichment's search fallback is what
-   recovers the 151. All cover_url/open_library_id are NULL pre-enrichment.
+2. Enrichment gotcha found: some CSV authors have a DOUBLE space ("Ryan  Cahill", "Brian
+   McClellan", "Jim  Butcher", "Stephen  King", "Richard  Swan") but the DB import stored them
+   single-spaced — so title+author matching on those failed until re-matched by title. If any
+   future script matches books by author string, normalize internal whitespace.
 3. Home + login restyled and manifest/icons added in the Slice-1 housekeeping bundle — no polish
    outstanding there.
 

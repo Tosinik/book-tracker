@@ -8,6 +8,7 @@ export type LibraryBook = {
   title: string;
   author: string | null;
   isbn: string | null;
+  coverUrl: string | null;
   status: "want_to_read" | "currently_reading" | "read" | "dnf";
   rating: number | null; // stored 1–10 (= 0.5–5.0 stars)
   finishedAt: string | null;
@@ -92,6 +93,7 @@ export default function LibraryView({ books }: { books: LibraryBook[] }) {
                       title={b.title}
                       author={b.author}
                       isbn={b.isbn}
+                      coverUrl={b.coverUrl}
                       size="L"
                     />
                   </div>
@@ -175,7 +177,13 @@ export default function LibraryView({ books }: { books: LibraryBook[] }) {
         <div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4 md:grid-cols-6">
           {filtered.map((b) => (
             <div key={b.id}>
-              <BookCover title={b.title} author={b.author} isbn={b.isbn} size="M" />
+              <BookCover
+                title={b.title}
+                author={b.author}
+                isbn={b.isbn}
+                coverUrl={b.coverUrl}
+                size="M"
+              />
               <div className="mt-1.5">
                 <StarsReadonly rating={b.rating} />
               </div>
@@ -187,7 +195,13 @@ export default function LibraryView({ books }: { books: LibraryBook[] }) {
           {filtered.map((b) => (
             <li key={b.id} className="flex items-center gap-4 py-3">
               <div className="w-10 shrink-0">
-                <BookCover title={b.title} author={b.author} isbn={b.isbn} size="M" />
+                <BookCover
+                  title={b.title}
+                  author={b.author}
+                  isbn={b.isbn}
+                  coverUrl={b.coverUrl}
+                  size="M"
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-serif text-base text-ink">{b.title}</p>

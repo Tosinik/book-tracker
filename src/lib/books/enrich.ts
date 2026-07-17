@@ -151,6 +151,48 @@ export function classifyAuthor(
   return sawLatin ? "no" : "nonlatin";
 }
 
+// Common title words to ignore when comparing titles.
+const TITLE_STOPWORDS = new Set([
+  "the", "a", "an", "and", "or", "of", "to", "in", "on", "for", "with", "at",
+  "by", "from", "is", "it", "als", "der", "die", "das",
+]);
+// Collection/omnibus markers. An omnibus title contains every volume's title, so
+// plain token overlap would match each volume to the omnibus and hand them all
+// the same (wrong) cover. Reject when the candidate looks like a collection and
+// our title doesn't.
+const COLLECTION_MARKERS = new Set([
+  "trilogy", "omnibus", "anthology", "collection", "duology", "quartet",
+  "tetralogy", "boxed", "complete", "novels",
+]);
+
+function titleSigTokens(title: string): string[] {
+  return normalizeName(title)
+    .split(" ")
+    .filter((t) => t && !TITLE_STOPWORDS.has(t) && !/^\d+$/.test(t));
+}
+
+/**
+ * Verify a search candidate's title agrees with ours before trusting its cover —
+ * an author match alone isn't enough (a different book by the same author, or a
+ * series omnibus, would otherwise steal a cover). Foreign-script titles can't be
+ * string-compared, so we allow them (the author + query context carries them).
+ * Overlap is measured against the shorter title so a bare "Sapiens" still matches
+ * our subtitled "Sapiens: A Brief History…".
+ */
+export function titleMatches(ours: string, candidate: string | null): boolean {
+  if (!candidate) return false;
+  if (!hasLatin(candidate)) return true; // foreign-script edition — can't compare
+  const o = titleSigTokens(ours);
+  const candTokens = new Set(normalizeName(candidate).split(" ").filter(Boolean));
+  const candIsCollection = [...candTokens].some((t) => COLLECTION_MARKERS.has(t));
+  if (candIsCollection && !o.some((t) => COLLECTION_MARKERS.has(t))) return false;
+  if (o.length === 0) return normalizeName(ours) === normalizeName(candidate);
+  const cSig = titleSigTokens(candidate);
+  const overlap = o.filter((t) => candTokens.has(t)).length;
+  const denom = Math.max(1, Math.min(o.length, cSig.length || o.length));
+  return overlap / denom >= 0.5;
+}
+
 /**
  * Open Library work descriptions are inconsistent: sometimes a plain string,
  * sometimes an object { type, value }. Normalize both to a trimmed string.
@@ -262,32 +304,29 @@ async function olSearch(q: string): Promise<SearchDoc[]> {
 }
 
 /**
- * First cover-bearing candidate whose author checks out.
+ * First cover-bearing candidate whose author AND title both check out.
+ * - The title must agree (titleMatches) so we don't take a different book by the
+ *   same author, or a series omnibus.
  * - `allowNonLatin` is true only for the author-anchored query (attempt 1): the
  *   author term anchors relevance, so trusting a non-Latin-named top hit is safe.
- * - In the title-only fallback (attempt 2) it's false, so a non-Latin author is
- *   accepted only when `expectedTitle` matches the candidate title exactly. That
- *   recovers exact foreign-edition matches (e.g. a Murakami title) without
- *   grabbing a same-series sibling's cover (whose title won't match).
+ *   In the title-only fallback (attempt 2) it's false, so a non-Latin author is
+ *   accepted only when the candidate title matches ours exactly.
  */
 function pickCandidate(
   docs: SearchDoc[],
   author: string,
-  opts: { allowNonLatin: boolean; expectedTitle?: string },
+  ourTitle: string,
+  allowNonLatin: boolean,
 ): SearchDoc | null {
   for (const d of docs) {
     if (d.coverId === null) continue;
     const cls = classifyAuthor(author, d.authorNames);
-    if (cls === "yes") return d;
-    if (cls === "nonlatin") {
-      if (opts.allowNonLatin) return d;
-      if (
-        opts.expectedTitle &&
-        d.title &&
-        normalizeName(d.title) === normalizeName(opts.expectedTitle)
-      )
-        return d;
+    if (cls === "no") continue;
+    if (cls === "nonlatin" && !allowNonLatin) {
+      if (d.title && normalizeName(d.title) === normalizeName(ourTitle)) return d;
+      continue;
     }
+    if (titleMatches(ourTitle, d.title)) return d;
   }
   return null;
 }
@@ -307,8 +346,8 @@ async function enrichBySearch(
   const q = cleanForSearch(title);
   // Attempt 1: author-anchored. Attempt 2: title-only, Latin-confirmed authors
   // (or a non-Latin author whose title matches ours exactly).
-  let doc = pickCandidate(await olSearch(`${q} ${author}`), author, { allowNonLatin: true });
-  if (!doc) doc = pickCandidate(await olSearch(q), author, { allowNonLatin: false, expectedTitle: q });
+  let doc = pickCandidate(await olSearch(`${q} ${author}`), author, q, true);
+  if (!doc) doc = pickCandidate(await olSearch(q), author, q, false);
   if (!doc || doc.coverId === null) return null;
 
   let description: string | null = null;

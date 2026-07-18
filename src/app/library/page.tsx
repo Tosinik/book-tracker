@@ -16,6 +16,7 @@ type UserBookRow = {
   rating: number | null;
   finished_at: string | null;
   current_page: number | null;
+  cover_url_override: string | null;
   books: BookJoin | BookJoin[] | null;
 };
 
@@ -35,7 +36,7 @@ export default async function LibraryPage() {
   const { data } = await supabase
     .from("user_books")
     .select(
-      "id, status, rating, finished_at, current_page, books(title, authors, isbn, cover_url, page_count)",
+      "id, status, rating, finished_at, current_page, cover_url_override, books(title, authors, isbn, cover_url, page_count)",
     )
     .order("created_at", { ascending: false });
 
@@ -51,6 +52,7 @@ export default async function LibraryPage() {
       author: b?.authors && b.authors.length > 0 ? b.authors.join(", ") : null,
       isbn: b?.isbn ?? null,
       coverUrl: b?.cover_url ?? null,
+      coverOverrideUrl: row.cover_url_override,
       status: row.status,
       rating: row.rating,
       finishedAt: row.finished_at,

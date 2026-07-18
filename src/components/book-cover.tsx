@@ -11,25 +11,28 @@ type Props = {
   title: string;
   author: string | null;
   isbn: string | null;
-  /** Cached Open Library cover URL from enrichment; preferred when present. */
+  /** Cached Open Library cover URL from enrichment; preferred over the ISBN. */
   coverUrl?: string | null;
+  /** Per-user chosen cover (user_books.cover_url_override); wins over everything. */
+  coverOverrideUrl?: string | null;
   size?: CoverSize;
 };
 
 /**
- * A book cover in a fixed 2:3 frame. Prefers the enrichment-cached cover URL,
- * then falls back to building one from the ISBN; if neither exists or the image
- * fails to load, it renders the typographic fallback tile — a first-class state,
- * not an error (many books have no art on Open Library).
+ * A book cover in a fixed 2:3 frame. Read order: the user's own cover override,
+ * then the enrichment-cached cover URL, then one built from the ISBN; if none
+ * exist or the image fails to load, it renders the typographic fallback tile —
+ * a first-class state, not an error (many books have no art on Open Library).
  */
 export default function BookCover({
   title,
   author,
   isbn,
   coverUrl,
+  coverOverrideUrl,
   size = "M",
 }: Props) {
-  const url = coverUrl || coverUrlFromIsbn(isbn, size);
+  const url = coverOverrideUrl || coverUrl || coverUrlFromIsbn(isbn, size);
   const [failed, setFailed] = useState(false);
   const showFallback = !url || failed;
 

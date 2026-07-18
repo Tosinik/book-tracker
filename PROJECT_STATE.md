@@ -5,8 +5,9 @@
 ## Current phase
 Phase 0 — Foundation ✅ COMPLETE (2026-07-09). Goodreads import done (673 books seeded).
 Phase 1 — Core logging: IN PROGRESS. Slice 1 (Library view + design system foundation) SHIPPED &
-deployed 2026-07-09. Next: Slice 2 — Book detail page (enrichment + interactive stars + status +
-review). Open questions resolved (see decisions log).
+deployed 2026-07-09. Slice 2 — Book detail page (enrichment + interactive stars + status + review +
+cover picker) BUILT & pushed 2026-07-18 (live-UI verification still pending). Next Phase 1 slices:
+custom shelves, Open Library search + add, reading dates polish.
 
 ## Deploy
 - Live URL: https://book-tracker-mu-five.vercel.app (Vercel, auto-deploys from GitHub main)
@@ -33,6 +34,24 @@ review). Open questions resolved (see decisions log).
   cover, mandatory typographic fallback tile for missing art. Keep OL calls in `lib/books/`.
 
 ## Last session summary
+2026-07-18 (Slice 2 — book detail page): Built the detail page + the deferred lazy enrichment.
+Migration `relax_olid_unique_add_cover_override_and_details_stamp` (verified the real constraint
+name `books_open_library_id_key` against pg_constraint first): dropped the UNIQUE on
+`books.open_library_id` (7 duplicate titles legitimately share a work), added
+`user_books.cover_url_override` (per-user cover choice), added `books.details_attempted_at` (a
+miss-cache stamp mirroring enrichment_attempted_at). New route `/library/[id]` (Server Component):
+on first view of a matched book it runs `enrichBook` and writes description/subjects/
+open_library_id (+ cover_url/page_count if still null) back to `books`, stamping
+details_attempted_at on EVERY attempt so failures aren't retried. Gate:
+`details_attempted_at IS NULL AND enrichment_source IS NOT NULL` (636 books eligible; the 37
+misses never trigger it). Interactive UI via Server Actions (`app/library/[id]/actions.ts`):
+0.5-step stars (int 1–10, click-again clears), status pills, review editor, started/finished
+dates. "Change cover" picker (`components/cover-picker.tsx` + `lib/books/editions.ts`): lists
+`/works/{id}/editions.json` covers that actually have art, manual image-URL paste, reset to
+default. Cover read order override→cover_url→ISBN→tile threaded through BookCover + the library
+grid/list/hero (now linked to detail pages). `next build` clean. NOT yet verified in the live UI
+(preview browser wasn't logged in this session). Committed + pushed to main (auto-deploys Vercel).
+
 2026-07-09 (Slice 2 — cover enrichment): Built + hardened `lib/books/enrich.ts` (Open Library:
 ISBN-first, then free-text `q=` title+author search; 3-state author check for non-Latin names /
 suffixes / transliteration; title-agreement check to prevent same-author & omnibus wrong-covers;

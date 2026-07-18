@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import BookCover from "@/components/book-cover";
 
 export type LibraryBook = {
@@ -9,6 +10,7 @@ export type LibraryBook = {
   author: string | null;
   isbn: string | null;
   coverUrl: string | null;
+  coverOverrideUrl: string | null;
   status: "want_to_read" | "currently_reading" | "read" | "dnf";
   rating: number | null; // stored 1–10 (= 0.5–5.0 stars)
   finishedAt: string | null;
@@ -84,9 +86,10 @@ export default function LibraryView({ books }: { books: LibraryBook[] }) {
                 ? Math.min(100, Math.round((b.currentPage! / b.pageCount!) * 100))
                 : 0;
               return (
-                <article
+                <Link
                   key={b.id}
-                  className="flex gap-4 rounded-lg border border-line bg-raised p-4"
+                  href={`/library/${b.id}`}
+                  className="flex gap-4 rounded-lg border border-line bg-raised p-4 transition-colors hover:border-border"
                 >
                   <div className="w-20 shrink-0">
                     <BookCover
@@ -94,6 +97,7 @@ export default function LibraryView({ books }: { books: LibraryBook[] }) {
                       author={b.author}
                       isbn={b.isbn}
                       coverUrl={b.coverUrl}
+                      coverOverrideUrl={b.coverOverrideUrl}
                       size="L"
                     />
                   </div>
@@ -122,7 +126,7 @@ export default function LibraryView({ books }: { books: LibraryBook[] }) {
                       </p>
                     )}
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>
@@ -176,47 +180,54 @@ export default function LibraryView({ books }: { books: LibraryBook[] }) {
       ) : view === "grid" ? (
         <div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4 md:grid-cols-6">
           {filtered.map((b) => (
-            <div key={b.id}>
+            <Link key={b.id} href={`/library/${b.id}`} className="group block">
               <BookCover
                 title={b.title}
                 author={b.author}
                 isbn={b.isbn}
                 coverUrl={b.coverUrl}
+                coverOverrideUrl={b.coverOverrideUrl}
                 size="M"
               />
               <div className="mt-1.5">
                 <StarsReadonly rating={b.rating} />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (
         <ul className="divide-y divide-line">
           {filtered.map((b) => (
-            <li key={b.id} className="flex items-center gap-4 py-3">
-              <div className="w-10 shrink-0">
-                <BookCover
-                  title={b.title}
-                  author={b.author}
-                  isbn={b.isbn}
-                  coverUrl={b.coverUrl}
-                  size="M"
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-serif text-base text-ink">{b.title}</p>
-                {b.author && (
-                  <p className="truncate text-sm text-ink-soft">{b.author}</p>
+            <li key={b.id}>
+              <Link
+                href={`/library/${b.id}`}
+                className="flex items-center gap-4 py-3 transition-colors hover:bg-raised"
+              >
+                <div className="w-10 shrink-0">
+                  <BookCover
+                    title={b.title}
+                    author={b.author}
+                    isbn={b.isbn}
+                    coverUrl={b.coverUrl}
+                    coverOverrideUrl={b.coverOverrideUrl}
+                    size="M"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-serif text-base text-ink">{b.title}</p>
+                  {b.author && (
+                    <p className="truncate text-sm text-ink-soft">{b.author}</p>
+                  )}
+                </div>
+                {b.finishedAt && (
+                  <span className="hidden font-mono text-[0.65rem] uppercase tracking-wider text-muted sm:inline">
+                    {b.finishedAt}
+                  </span>
                 )}
-              </div>
-              {b.finishedAt && (
-                <span className="hidden font-mono text-[0.65rem] uppercase tracking-wider text-muted sm:inline">
-                  {b.finishedAt}
-                </span>
-              )}
-              <div className="shrink-0">
-                <StarsReadonly rating={b.rating} />
-              </div>
+                <div className="shrink-0">
+                  <StarsReadonly rating={b.rating} />
+                </div>
+              </Link>
             </li>
           ))}
         </ul>

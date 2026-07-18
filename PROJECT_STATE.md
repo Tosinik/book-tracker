@@ -33,6 +33,18 @@ review). Open questions resolved (see decisions log).
   cover, mandatory typographic fallback tile for missing art. Keep OL calls in `lib/books/`.
 
 ## Last session summary
+2026-07-09 (Slice 2 — cover enrichment): Built + hardened `lib/books/enrich.ts` (Open Library:
+ISBN-first, then free-text `q=` title+author search; 3-state author check for non-Latin names /
+suffixes / transliteration; title-agreement check to prevent same-author & omnibus wrong-covers;
+two-attempt strategy). Ran a throttled full pass over all 673 books and WROTE cover_url + page_count
++ enrichment_source + enrichment_attempted_at to the DB via the Supabase MCP (compact SQL, applied
+in 4 batches + a 10-row fix; verified by exact count check). **636/673 (94.5%) now have covers**
+(416 ISBN / 220 search; 37 genuine misses). Wired the app to read cached cover_url (BookCover +
+library query → grid/hero/list). `next build` clean; committed (678aadc→dc996b1) and PUSHED to main
+(deployed to Vercel). NOT written this pass: descriptions, subjects, open_library_id (see Next steps
+a/b). Migration `add_books_enrichment_fields` applied earlier in the session. Found a data gotcha:
+some CSV authors are double-spaced but the DB stored them single-spaced (see Next steps #2).
+
 2026-07-09 (Slice 1): Shipped Phase 1 Slice 1 — the Library view + the "Stacks × Journal" design
 system foundation. Color tokens (light+dark) + Newsreader/Archivo/JetBrains Mono fonts; data-theme
 dark mode with a manual toggle (localStorage) + inline anti-flash script. Library view: Now Reading
